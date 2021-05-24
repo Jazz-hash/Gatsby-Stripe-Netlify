@@ -1,29 +1,26 @@
 import * as React from "react"
-import { Link } from "gatsby"
-import { StaticImage } from "gatsby-plugin-image"
+import { loadStripe } from "@stripe/stripe-js"
 
-import Layout from "../components/layout"
-import Seo from "../components/seo"
+const stripePromise = loadStripe("pk_test_oCAxK0CcUTHFsfOEu531pLYK00rYFcE5uu")
 
-const IndexPage = () => (
-  <Layout>
-    <Seo title="Home" />
-    <h1>Hi people</h1>
-    <p>Welcome to your new Gatsby site.</p>
-    <p>Now go build something great.</p>
-    <StaticImage
-      src="../images/gatsby-astronaut.png"
-      width={300}
-      quality={95}
-      formats={["AUTO", "WEBP", "AVIF"]}
-      alt="A Gatsby astronaut"
-      style={{ marginBottom: `1.45rem` }}
-    />
-    <p>
-      <Link to="/page-2/">Go to page 2</Link> <br />
-      <Link to="/using-typescript/">Go to "Using TypeScript"</Link>
-    </p>
-  </Layout>
-)
+const IndexPage = () => {
+  const redirectToCheckout = async () => {
+    const stripe = await stripePromise
+
+    const result = await stripe.redirectToCheckout({
+      mode: "payment",
+      lineItems: [{ price: "price_1Iujz0AcdubkaULyk76yd2ZR", quantity: 1 }],
+      successUrl: `http://localhost:8000/`,
+      cancelUrl: `http://localhost:8000/`,
+    })
+  }
+
+  return (
+    <div>
+      <div>Hello World !!</div>
+      <button onClick={redirectToCheckout}> Checkout</button>
+    </div>
+  )
+}
 
 export default IndexPage
